@@ -1,8 +1,13 @@
+const fs=require('fs');
 const http = require('http');
-const pokemon =require('pokemon');
+// require 포케몬 정보를 "요청"한다.
+const pokemon = require('pokemon');
+// 실질적으로 내가 작성하는 포인트
 const formTag = `
-<div>귀여워 윤이</div>
-<form method="GET" action="/login/ggg.sss"> 
+<div>귀여운 윤이</div>
+<h1>cute dog </h1>
+<img src="/picture" width="200px">
+<form method="GET" action="/pokeName"> 
 <input type="text" name="id">
 <input type="submit"> 
 </form>
@@ -11,7 +16,7 @@ function greet(fromSubmitString) {
 return `<h1>${fromSubmitString}</h1>`;
 }
 function firstPage(data) {
-return `
+return`
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,10 +31,26 @@ ${data}
 </html>
 `;
 }
+// NPM에서 README를 봐서, 그에 맞는 함수를 만들어준다.
+// 내가 원하는건, 한글로 포켓몬을 작성하면, 영어로 나오는것
+//  let id=pokemon.getId(pokeMon, 'ko'); == ID값을 나오게 설정
+//  let Name=pokemon.getName(id, 'en'); id값에 맞는 영어 이름을 나오게
+     
 
-// 첫번째 관문, 옥천허브 입구
+function nameChanger(pokeMon){
+
+  let id=pokemon.getId(pokeMon, 'ko');
+  let Name=pokemon.getName(id, 'en');
+
+
+return Name 
+}
+console.log(nameChanger("파이리"));
+//  옥천허브 물류창고 입구
 const server = http.createServer(function(request, response){
 // 최초접속
+// 리퀘스트 url =/ 즉 첫페이지라면,
+// page 라는 안창살을 내놔라
 if(request.method === 'GET' && request.url === '/') {
 response.writeHead(200, {'Content-Type': 'text/html'});
 let page = firstPage(formTag);
@@ -37,20 +58,26 @@ response.write(page);
 response.end();
 //? 처음 페이지에 접속하면 앞서 설정해놨던 formTag를 띄워준다.
 }
-// 무언가
-// 옥천허브, 소고기 구분하는 구간
-if(request.method === 'GET' && request.url.startsWith('/pokemon')) {
-const name = request.url.split('=')[1];
-response.writeHead(200, {'Content-Type': 'text/html'});
-let page = firstPage(greet(name))
+// 옥천 물류센터 소고기섹터
+// 가위질을 해서, ?id= 뒤에 나오게 해라.
+// 
+if(request.method === 'GET' && request.url.startsWith('/pokeName')) {
+  response.writeHead(200, {'Content-Type': 'text/html'});
+  console.log(decodeURIComponent(request.url.split("=")[1]));
+  response.write(firstPage("<div>" + nameChanger(decodeURIComponent(request.url.split("=")[1]))+"people"+"</div>"));
+  
+ response.end();
 
-response.write(page);
-response.write("<div style='background-color : red'>hello</div>");
-response.write(page);
-//? write의 개수는 몇개가 쓰여지든 상관 없는지 확인. html 페이지니까 write일 때 style속성을 부여해도 적용되는지 확인.
-response.end();
-}
-});
+// if(request.method === 'GET' && request.url ==='/picture'){
+//       response.writeHead(200, {'Content-Type': 'jpg'});
+//       response.write(firstPage('./picture/Dog.jpg')
+//       response.end();    
+//   });
+// }
+
+
+
+}});
 
 
 
